@@ -21,7 +21,8 @@ const App = () => {
 
   const generateRandomSelected = () => {
     let x = Math.floor(Math.random() * anecdotes.length);
-    setSelected(x);
+    if (x !== selected) return x;
+    else return generateRandomSelected();
   };
   const handleVote = () => {
     const copy = [...votes];
@@ -33,7 +34,7 @@ const App = () => {
     <div>
       <p> {anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
-      <button onClick={generateRandomSelected}>next anecdote</button>
+      <button onClick={()=>setSelected(generateRandomSelected)}>next anecdote</button>
       <button onClick={handleVote}>vote</button>
       <h1>Anecdote with most votes:</h1>
       {mostVotes === 0 ? (
