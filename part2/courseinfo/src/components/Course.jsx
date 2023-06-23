@@ -29,19 +29,12 @@ const Content = ({ parts }) => (
   </>
 );
 
-const Course = ({ courses }) => {
-  console.log(courses)
-  return (
-    <div>
-      {courses.map((course) => (
-        <div key={course.id}>
-          <Header course={course.name} />
-          <Content parts={course.parts} />
-          <Total sum={course.parts} />
-        </div>
-      ))}
-    </div>
-  );
-};
+const Course = ({ course }) => (
+  <div key={course.id}>
+    <Header course={course.name} />
+    <Content parts={course.parts} />
+    <Total sum={course.parts} />
+  </div>
+);
 
 export default Course;
