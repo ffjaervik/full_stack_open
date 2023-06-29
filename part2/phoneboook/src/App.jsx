@@ -38,19 +38,21 @@ const App = () => {
   const handlePersonFilterChange = (e) => setpersonFilter(e.target.value);
 
   const addToPhoneBook = () => {
-    console.log("newName", newName);
-    console.log("allNames", allNames);
-    console.log(allNames.includes(newName));
     if (allNames.includes(newName)) {
       alert(`${newName} is already added to the phonebook`);
       setNewName("");
     } else {
       alert(`${newName} added to the phonebook`);
+
       const newPerson = {
         name: newName,
         number: newNumber,
-        id: allNames.length + 1,
       };
+
+      axios
+        .post("http://localhost:3001/persons", newPerson)
+        .then((res) => console.log(res));
+
       setPersons(persons.concat(newPerson));
       setNewName("");
       setNewNumber("");
