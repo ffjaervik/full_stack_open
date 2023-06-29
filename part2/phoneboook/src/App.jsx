@@ -5,6 +5,8 @@ import Person from "./components/Person";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+import { getAll, create, update } from "./services/persons.js";
+
 const App = () => {
   const [persons, setPersons] = useState([]);
 
@@ -14,9 +16,7 @@ const App = () => {
   const allNames = persons.map((person) => person.name);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((res) => setPersons(res.data));
+    getAll().then((initialPersons) => setPersons(initialPersons));
   }, []);
 
   // EXAMPLE OF DATA FETCHING WITHOUT AXIOS
@@ -49,11 +49,9 @@ const App = () => {
         number: newNumber,
       };
 
-      axios
-        .post("http://localhost:3001/persons", newPerson)
-        .then((res) => console.log(res));
-
-      setPersons(persons.concat(newPerson));
+      create(newPerson).then((returnedPerson) =>
+        setPersons(persons.concat(returnedPerson))
+      );
       setNewName("");
       setNewNumber("");
     }
