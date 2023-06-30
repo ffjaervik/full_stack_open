@@ -3,9 +3,12 @@ import PersonForm from "./components/PersonForm";
 import Person from "./components/Person";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 
-import { getAll, create, update } from "./services/persons.js";
+import {
+  getAllPersons,
+  createPerson,
+  deletePerson,
+} from "./services/persons.js";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -16,7 +19,7 @@ const App = () => {
   const allNames = persons.map((person) => person.name);
 
   useEffect(() => {
-    getAll().then((initialPersons) => setPersons(initialPersons));
+    getAllPersons().then((initialPersons) => setPersons(initialPersons));
   }, []);
 
   // EXAMPLE OF DATA FETCHING WITHOUT AXIOS
@@ -49,9 +52,10 @@ const App = () => {
         number: newNumber,
       };
 
-      create(newPerson).then((returnedPerson) =>
+      createPerson(newPerson).then((returnedPerson) =>
         setPersons(persons.concat(returnedPerson))
       );
+
       setNewName("");
       setNewNumber("");
     }
@@ -69,6 +73,16 @@ const App = () => {
           person.name.toLocaleLowerCase().includes(personFilter.toLowerCase())
         );
 
+  const handleDelete = (id) => {
+    const personName = persons[id - 1].name
+    if (window.confirm(`Sure you wand to delete ${personName}`)) {
+      deletePerson(id).then((response) => {
+        console.log("response", response);
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -84,7 +98,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Person personsToShow={personsToShow} />
+      <Person personsToShow={personsToShow} deletePerson={handleDelete} />
     </div>
   );
 };
