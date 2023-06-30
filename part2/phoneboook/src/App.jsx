@@ -1,6 +1,7 @@
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Person from "./components/Person";
+import Notification from "./components/Notification";
 
 import { useState, useEffect } from "react";
 
@@ -17,6 +18,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [personFilter, setpersonFilter] = useState("");
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     getAllPersons().then((initialPersons) => setPersons(initialPersons));
@@ -46,6 +48,8 @@ const App = () => {
         `${newName} is already added to the phonebook, replace the old number with the new one`
       )
     ) {
+      setMessage(`${newName}'s number was updated`);
+      setTimeout(() => setMessage(null), 5000);
       const personObjToChange = persons[updateId];
       const updatedPerson = { ...personObjToChange, number: newNumber };
       updatePerson(updateId + 1, updatedPerson).then(
@@ -68,7 +72,10 @@ const App = () => {
     ) {
       alert(`${newName} nr.:${newNumber} is already added to the phonebook`);
     } else {
-      alert(`${newName} added to the phonebook`);
+      setMessage(`${newName}' was added to the phonebook`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
 
       const newPerson = {
         name: newName,
@@ -129,6 +136,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter value={personFilter} onChange={handlePersonFilterChange} />
 
       <h2>add a new</h2>

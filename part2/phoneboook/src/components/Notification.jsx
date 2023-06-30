@@ -3,8 +3,12 @@ import React from "react";
 const Notification = ({ message }) => {
   const success = {
     color: "green",
-    fontStyle: "italic",
-    fontSize: 16,
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
   };
   const error = {
     color: "red",
@@ -19,6 +23,6 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null;
   }
-  return <div className={success}>{message}</div>;
+  return <div style={success}>{message}</div>;
 };
 export default Notification;
