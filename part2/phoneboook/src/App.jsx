@@ -40,34 +40,22 @@ const App = () => {
   const handleNumberChange = (e) => setNewNumber(e.target.value);
   const handlePersonFilterChange = (e) => setpersonFilter(e.target.value);
 
-  const checkForUpdate = () => {
-    const updateId = persons.findIndex((person) => person.name == newName);
-
+  const checkForUpdate = (updateId) => {
     if (
-      persons.some(
-        (person) =>
-          person.name.toLocaleLowerCase() === newName.toLocaleLowerCase() &&
-          person.number !== newNumber
+      window.confirm(
+        `${newName} is already added to the phonebook, replace the old number with the new one`
       )
     ) {
-      if (
-        window.confirm(
-          `${newName} is already added to the phonebook, replace the old number with the new one`
-        )
-      ) {
-        const personObjToChange = persons[updateId];
-        const updatedPerson = { ...personObjToChange, number: newNumber };
-        updatePerson(updateId + 1, updatedPerson).then(
-          setPersons(
-            persons.map((person) =>
-              person.id !== updateId + 1 ? person : updatedPerson
-            )
+      const personObjToChange = persons[updateId];
+      const updatedPerson = { ...personObjToChange, number: newNumber };
+      updatePerson(updateId + 1, updatedPerson).then(
+        setPersons(
+          persons.map((person) =>
+            person.id !== updateId + 1 ? person : updatedPerson
           )
-        );
-        return true;
-      }
+        )
+      );
     }
-    return false;
   };
 
   const addToPhoneBook = () => {
@@ -97,7 +85,29 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    checkForUpdate() ? null : addToPhoneBook();
+
+    if (newName === "") {
+      alert("name can't be empty");
+      return;
+    }
+
+    if (newNumber === "") {
+      alert("number can't be empty");
+      return;
+    }
+
+    if (
+      persons.some(
+        (person) =>
+          person.name.toLocaleLowerCase() === newName.toLocaleLowerCase() &&
+          person.number !== newNumber
+      )
+    ) {
+      const updateId = persons.findIndex((person) => person.name == newName);
+      checkForUpdate(updateId);
+    } else {
+      addToPhoneBook();
+    }
   };
 
   const personsToShow =
