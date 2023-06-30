@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import {
   getAllPersons,
   createPerson,
+  updatePerson,
   deletePerson,
 } from "./services/persons.js";
 
@@ -16,7 +17,6 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [personFilter, setpersonFilter] = useState("");
-  const allNames = persons.map((person) => person.name);
 
   useEffect(() => {
     getAllPersons().then((initialPersons) => setPersons(initialPersons));
@@ -40,10 +40,45 @@ const App = () => {
   const handleNumberChange = (e) => setNewNumber(e.target.value);
   const handlePersonFilterChange = (e) => setpersonFilter(e.target.value);
 
+  const checkForUpdate = () => {
+    const updateId = persons.findIndex((person) => person.name == newName);
+
+    if (
+      persons.some(
+        (person) =>
+          person.name.toLocaleLowerCase() === newName.toLocaleLowerCase() &&
+          person.number !== newNumber
+      )
+    ) {
+      if (
+        window.confirm(
+          `${newName} is already added to the phonebook, replace the old number with the new one`
+        )
+      ) {
+        const personObjToChange = persons[updateId];
+        const updatedPerson = { ...personObjToChange, number: newNumber };
+        updatePerson(updateId + 1, updatedPerson).then(
+          setPersons(
+            persons.map((person) =>
+              person.id !== updateId + 1 ? person : updatedPerson
+            )
+          )
+        );
+        return true;
+      }
+    }
+    return false;
+  };
+
   const addToPhoneBook = () => {
-    if (allNames.includes(newName)) {
-      alert(`${newName} is already added to the phonebook`);
-      setNewName("");
+    if (
+      persons.some(
+        (person) =>
+          person.name.toLowerCase() === newName.toLowerCase() &&
+          person.number === newNumber
+      )
+    ) {
+      alert(`${newName} nr.:${newNumber} is already added to the phonebook`);
     } else {
       alert(`${newName} added to the phonebook`);
 
@@ -55,15 +90,14 @@ const App = () => {
       createPerson(newPerson).then((returnedPerson) =>
         setPersons(persons.concat(returnedPerson))
       );
-
-      setNewName("");
-      setNewNumber("");
     }
+    setNewName("");
+    setNewNumber("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addToPhoneBook();
+    checkForUpdate() ? null : addToPhoneBook();
   };
 
   const personsToShow =
@@ -74,10 +108,9 @@ const App = () => {
         );
 
   const handleDelete = (id) => {
-    const personName = persons[id - 1].name
-    if (window.confirm(`Sure you wand to delete ${personName}`)) {
-      deletePerson(id).then((response) => {
-        console.log("response", response);
+    const personName = persons[id - 1].name;
+    if (window.confirm(`Sure you want to delete ${personName}`)) {
+      deletePerson(id).then(() => {
         setPersons(persons.filter((person) => person.id !== id));
       });
     }
