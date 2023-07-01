@@ -17,7 +17,7 @@ const updatePerson = (id, newObject) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject);
   return request
     .then((response) => response.data)
-    .catch((error) => console.log("update Failed:", error));
+     .catch((error) => console.log("UPDATE FAILED:", error));
 };
 
 const deletePerson = (id) => {

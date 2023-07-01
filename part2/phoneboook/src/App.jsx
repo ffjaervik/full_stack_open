@@ -21,9 +21,9 @@ const App = () => {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    getAllPersons().then((initialPersons) => setPersons(initialPersons));
+    getAllPersons().then((initialPersons) => setPersons(initialPersons))
+    .catch(error => console.error("Failed to fetch persons", error));
   }, []);
-
   // EXAMPLE OF DATA FETCHING WITHOUT AXIOS
   // useEffect(() => {
   //   async function fetchData() {
@@ -42,7 +42,8 @@ const App = () => {
   const handleNumberChange = (e) => setNewNumber(e.target.value);
   const handlePersonFilterChange = (e) => setpersonFilter(e.target.value);
 
-  const checkForUpdate = (updateId) => {
+  const checkForUpdate = (personToUpdate) => {
+    const personToUpdateId = personToUpdate.id;
     if (
       window.confirm(
         `${newName} is already added to the phonebook, replace the old number with the new one`
@@ -50,15 +51,23 @@ const App = () => {
     ) {
       setMessage(`${newName}'s number was updated`);
       setTimeout(() => setMessage(null), 5000);
-      const personObjToChange = persons[updateId];
-      const updatedPerson = { ...personObjToChange, number: newNumber };
-      updatePerson(updateId + 1, updatedPerson).then(
+      const updatedPerson = { ...personToUpdate, number: newNumber };
+
+      updatePerson(personToUpdateId, updatedPerson).then((returnedPerson) =>
         setPersons(
           persons.map((person) =>
-            person.id !== updateId + 1 ? person : updatedPerson
+            person.id !== returnedPerson.id ? person : returnedPerson
           )
         )
-      );
+      ).catch(error => {
+        setMessage(
+          `${error}Information of '${newName}' has already been removed from server`
+        );
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+        setPersons(persons.filter((person) => person.id !== personToUpdateId));
+      })
     }
   };
 
@@ -110,8 +119,8 @@ const App = () => {
           person.number !== newNumber
       )
     ) {
-      const updateId = persons.findIndex((person) => person.name == newName);
-      checkForUpdate(updateId);
+      const personToUpdate = persons.find((person) => person.name == newName);
+      checkForUpdate(personToUpdate);
     } else {
       addToPhoneBook();
     }
@@ -124,11 +133,11 @@ const App = () => {
           person.name.toLocaleLowerCase().includes(personFilter.toLowerCase())
         );
 
-  const handleDelete = (id) => {
-    const personName = persons[id - 1].name;
-    if (window.confirm(`Sure you want to delete ${personName}`)) {
-      deletePerson(id).then(() => {
-        setPersons(persons.filter((person) => person.id !== id));
+  const handleDelete = (name) => {
+    const personToDelete = persons.find((person) => person.name === name);
+    if (window.confirm(`Sure you want to delete ${personToDelete.name}`)) {
+      deletePerson(personToDelete.id).then(() => {
+        setPersons(persons.filter((person) => person.id !== personToDelete.id));
       });
     }
   };
