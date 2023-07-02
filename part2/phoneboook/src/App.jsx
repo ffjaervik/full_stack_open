@@ -136,6 +136,10 @@ const App = () => {
   const handleDelete = (name) => {
     const personToDelete = persons.find((person) => person.name === name);
     if (window.confirm(`Sure you want to delete ${personToDelete.name}`)) {
+      setMessage(`${personToDelete.name} was deleted`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
       deletePerson(personToDelete.id).then(() => {
         setPersons(persons.filter((person) => person.id !== personToDelete.id));
       });

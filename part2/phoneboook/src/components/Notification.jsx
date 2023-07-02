@@ -1,6 +1,7 @@
 import React from "react";
-
+//deleted removed
 const Notification = ({ message }) => {
+  console.log("message", message);
   const success = {
     color: "green",
     background: "lightgrey",
@@ -23,6 +24,16 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null;
   }
-  return <div style={success}>{message}</div>;
+  return (
+    <div
+      style={
+        message.includes("deleted") || message.includes("removed")
+          ? error
+          : success
+      }
+    >
+      {message}
+    </div>
+  );
 };
 export default Notification;
