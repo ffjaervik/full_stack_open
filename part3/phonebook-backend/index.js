@@ -2,8 +2,6 @@ import express from "express";
 
 const app = express();
 
-
-
 const personsData = [
   {
     id: 1,
@@ -31,29 +29,21 @@ app.get("/api/persons", (req, res) => {
   res.json(personsData);
 });
 
+app.get("/info", (req, res) => {
+  const info = {
+    amount: personsData.length,
+    date: new Date(),
+  };
+  console.log(info);
+  res.send(
+    `<p>Phonebook has info for ${info.amount} people</br>${info.date}</p>`
+  );
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-// let notes = [
-//       {
-//         id: 1,
-//         content: "HTML is easy",
-//         important: true
-//       },
-//       {
-//         id: 2,
-//         content: "Browser can execute only JavaScript",
-//         important: false
-//       },
-//       {
-//         id: 3,
-//         content: "GET and POST are the most important methods of HTTP protocol",
-//         important: true
-//       }
-//     ]
 
 //     app.get('/', (req, res) => {
 //       res.send('<h1>Hello World!</h1>')
