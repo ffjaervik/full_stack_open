@@ -1,31 +1,37 @@
 import express from "express";
 
 const app = express();
-
-app.use(express.json());
+// import personsData from "./db.js";
 
 const personsData = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+      {
+        id: 1,
+        name: "Arto Hellas",
+        number: "040-123456",
+      },
+      {
+        id: 2,
+        name: "Ada Lovelace",
+        number: "39-44-5323523",
+      },
+      {
+        id: 3,
+        name: "Dan Abramov",
+        number: "12-43-234345",
+      },
+      {
+        id: 4,
+        name: "Mary Poppendieck",
+        number: "39-23-6423122",
+      },
+      {
+        id: 5,
+        name: "Fabian",
+        number: "39-23-6413453122",
+      },
+    ];
+
+app.use(express.json());
 
 app.get("/api/persons", (req, res) => {
   res.json(personsData);
@@ -36,7 +42,6 @@ app.get("/info", (req, res) => {
     amount: personsData.length,
     date: new Date(),
   };
-  console.log(info);
   res.send(
     `<p>Phonebook has info for ${info.amount} people</br>${info.date}</p>`
   );
@@ -45,13 +50,19 @@ app.get("/info", (req, res) => {
 app.get("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
   const reqPerson = personsData.find((person) => person.id === id);
-  if(reqPerson) {
-      res.json(reqPerson)
-  } else{
-      res.status(404).end()
+  if (reqPerson) {
+    res.json(reqPerson);
+  } else {
+    res.status(404).end();
   }
-
 });
+
+app.delete("/api/persons/:id", (req, res) => {
+      const id = Number(req.params.id);
+      personsData = personsData.filter((person) => person.id !== id);
+      res.status(204).end();
+});
+
 
 
 const PORT = 3001;
@@ -87,15 +98,3 @@ app.listen(PORT, () => {
 //       response.json(note)
 //     })
 
-
-//     app.delete('/api/notes/:id', (request, response) => {
-//       const id = Number(request.params.id)
-//       notes = notes.filter(note => note.id !== id)
-
-//       response.status(204).end()
-//     })
-
-//     const PORT = 3001
-//     app.listen(PORT, () => {
-//       console.log(`Server running on port ${PORT}`)
-//     })
