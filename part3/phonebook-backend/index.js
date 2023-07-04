@@ -37,15 +37,26 @@ app.delete("/api/persons/:id", (req, res) => {
 
 app.post("/api/persons", (req, res) => {
   const person = req.body;
-  console.log("person", person)
   const generateId = () => {
     const maxId = personsData.length > 0 ? Math.floor(Math.random() * 1000) : 0;
     return maxId;
   };
+  if (
+    personsData.find((p) => p.name.toLowerCase() === person.name.toLowerCase())
+  ) {
+    return res.status(400).json({
+      error: "name must be unique",
+    });
+  }
+  if (personsData.find((p) => p.number === person.number)) {
+    return res.status(400).json({
+      error: "number must be unique",
+    });
+  }
 
   if (!person.name || !person.number) {
     return res.status(400).json({
-      error: "content missing",
+      error: "name or number missing",
     });
   }
 
@@ -55,7 +66,6 @@ app.post("/api/persons", (req, res) => {
     number: person.number,
   };
 
-  console.log(newPerson);
   setPersonsData(personsData.concat(newPerson));
   res.json(newPerson);
 });
