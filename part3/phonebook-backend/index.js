@@ -1,35 +1,7 @@
 import express from "express";
+import { personsData, setPersonsData } from "./db.js";
 
 const app = express();
-// import personsData from "./db.js";
-
-const personsData = [
-      {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040-123456",
-      },
-      {
-        id: 2,
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-      },
-      {
-        id: 3,
-        name: "Dan Abramov",
-        number: "12-43-234345",
-      },
-      {
-        id: 4,
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-      },
-      {
-        id: 5,
-        name: "Fabian",
-        number: "39-23-6413453122",
-      },
-    ];
 
 app.use(express.json());
 
@@ -58,17 +30,55 @@ app.get("/api/persons/:id", (req, res) => {
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-      const id = Number(req.params.id);
-      personsData = personsData.filter((person) => person.id !== id);
-      res.status(204).end();
+  const id = Number(req.params.id);
+  setPersonsData(personsData.filter((person) => person.id !== id));
+  res.status(204).end();
 });
 
+app.post("/api/persons", (req, res) => {
+  const person = req.body;
+  console.log("person", person)
+  const generateId = () => {
+    const maxId = personsData.length > 0 ? Math.floor(Math.random() * 1000) : 0;
+    return maxId;
+  };
 
+  if (!person.name || !person.number) {
+    return res.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const newPerson = {
+    id: generateId(),
+    name: person.name,
+    number: person.number,
+  };
+
+  console.log(newPerson);
+  setPersonsData(personsData.concat(newPerson));
+  res.json(newPerson);
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// app.post('/api/persons', (req, res, next) => {
+//       const person = req.body;
+
+//       const errors = validatePerson(person);
+//       if (errors.length !== 0) {
+//         return res.status(400).json({ errors });
+//       }
+
+//       const personToAdd = new Person({ name: person.name, number: person.number });
+//       personToAdd
+//         .save()
+//         .then((savedPerson) => res.status(201).json(savedPerson))
+//         .catch((err) => next(err));
+//     });
 
 //     const generateId = () => {
 //       const maxId = notes.length > 0
@@ -97,4 +107,3 @@ app.listen(PORT, () => {
 
 //       response.json(note)
 //     })
-
