@@ -1,9 +1,19 @@
 import express from "express";
 import { personsData, setPersonsData } from "./db.js";
+import morgan from "morgan";
 
 const app = express();
 
 app.use(express.json());
+
+//Body logger for Post request
+morgan.token("body", function (req, res) {
+  return req.method === "POST" ? JSON.stringify(req.body) : undefined;
+});
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
+//End of body logger
 
 app.get("/api/persons", (req, res) => {
   res.json(personsData);
@@ -67,6 +77,7 @@ app.post("/api/persons", (req, res) => {
   };
 
   setPersonsData(personsData.concat(newPerson));
+
   res.json(newPerson);
 });
 
@@ -75,45 +86,8 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// app.post('/api/persons', (req, res, next) => {
-//       const person = req.body;
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
 
-//       const errors = validatePerson(person);
-//       if (errors.length !== 0) {
-//         return res.status(400).json({ errors });
-//       }
-
-//       const personToAdd = new Person({ name: person.name, number: person.number });
-//       personToAdd
-//         .save()
-//         .then((savedPerson) => res.status(201).json(savedPerson))
-//         .catch((err) => next(err));
-//     });
-
-//     const generateId = () => {
-//       const maxId = notes.length > 0
-//         ? Math.max(...notes.map(n => n.id))
-//         : 0
-//       return maxId + 1
-//     }
-
-//     app.post('/api/notes', (request, response) => {
-//       const body = request.body
-
-//       if (!body.content) {
-//         return response.status(400).json({
-//           error: 'content missing'
-//         })
-//       }
-
-//       const note = {
-//         content: body.content,
-//         important: body.important || false,
-//         date: new Date(),
-//         id: generateId(),
-//       }
-
-//       notes = notes.concat(note)
-
-//       response.json(note)
-//     })
+app.use(unknownEndpoint);
