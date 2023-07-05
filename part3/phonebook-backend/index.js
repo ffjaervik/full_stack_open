@@ -1,9 +1,11 @@
 import express from "express";
 import { personsData, setPersonsData } from "./db.js";
 import morgan from "morgan";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 //Body logger for Post request
@@ -81,10 +83,11 @@ app.post("/api/persons", (req, res) => {
   res.json(newPerson);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001
+console.log("PORT", PORT);
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  console.log(`Server running on port ${PORT}`)
+})
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
