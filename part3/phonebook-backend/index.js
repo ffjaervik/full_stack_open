@@ -7,6 +7,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("build"));
 
 //Body logger for Post request
 morgan.token("body", function (req, res) {

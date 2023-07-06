@@ -119,7 +119,7 @@ const App = () => {
           person.number !== newNumber
       )
     ) {
-      const personToUpdate = persons.find((person) => person.name == newName);
+      const personToUpdate = persons.find((person) => person.name === newName);
       checkForUpdate(personToUpdate);
     } else {
       addToPhoneBook();

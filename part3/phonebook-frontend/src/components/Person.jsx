@@ -1,4 +1,8 @@
 const Person = ({ personsToShow, deletePerson }) => {
+
+  if(personsToShow.length === 0) return (<p>No persons to show</p>
+  )
+
   return (
     <>
       {personsToShow.map((person) => (
