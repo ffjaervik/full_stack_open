@@ -1,7 +1,8 @@
 import express from "express";
-import { personsData, setPersonsData } from "./db.js";
+// import { personsData, setPersonsData } from "./db.js";
 import morgan from "morgan";
 import cors from "cors";
+import Person from "./models/person.js";
 
 const app = express();
 
@@ -18,77 +19,88 @@ app.use(
 );
 //End of body logger
 
-app.get("/api/persons", (req, res) => {
-  res.json(personsData);
+
+//FETCHING FROM MONGODB
+app.get("/api/persons", (request, response) => {
+  Person.find({}).then((person) => {
+    response.json(person);
+  });
 });
 
-app.get("/info", (req, res) => {
-  const info = {
-    amount: personsData.length,
-    date: new Date(),
-  };
-  res.send(
-    `<p>Phonebook has info for ${info.amount} people</br>${info.date}</p>`
-  );
-});
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const reqPerson = personsData.find((person) => person.id === id);
-  if (reqPerson) {
-    res.json(reqPerson);
-  } else {
-    res.status(404).end();
-  }
-});
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  setPersonsData(personsData.filter((person) => person.id !== id));
-  res.status(204).end();
-});
 
-app.post("/api/persons", (req, res) => {
-  const person = req.body;
-  const generateId = () => {
-    const maxId = personsData.length > 0 ? Math.floor(Math.random() * 1000) : 0;
-    return maxId;
-  };
-  if (
-    personsData.find((p) => p.name.toLowerCase() === person.name.toLowerCase())
-  ) {
-    return res.status(400).json({
-      error: "name must be unique",
-    });
-  }
-  if (personsData.find((p) => p.number === person.number)) {
-    return res.status(400).json({
-      error: "number must be unique",
-    });
-  }
+// app.get("/api/persons", (req, res) => {
+//   res.json(personsData);
+// });
 
-  if (!person.name || !person.number) {
-    return res.status(400).json({
-      error: "name or number missing",
-    });
-  }
+// app.get("/info", (req, res) => {
+//   const info = {
+//     amount: personsData.length,
+//     date: new Date(),
+//   };
+//   res.send(
+//     `<p>Phonebook has info for ${info.amount} people</br>${info.date}</p>`
+//   );
+// });
 
-  const newPerson = {
-    id: generateId(),
-    name: person.name,
-    number: person.number,
-  };
+// app.get("/api/persons/:id", (req, res) => {
+//   const id = Number(req.params.id);
+//   const reqPerson = personsData.find((person) => person.id === id);
+//   if (reqPerson) {
+//     res.json(reqPerson);
+//   } else {
+//     res.status(404).end();
+//   }
+// });
 
-  setPersonsData(personsData.concat(newPerson));
+// app.delete("/api/persons/:id", (req, res) => {
+//   const id = Number(req.params.id);
+//   setPersonsData(personsData.filter((person) => person.id !== id));
+//   res.status(204).end();
+// });
 
-  res.json(newPerson);
-});
+// app.post("/api/persons", (req, res) => {
+//   const person = req.body;
+//   const generateId = () => {
+//     const maxId = personsData.length > 0 ? Math.floor(Math.random() * 1000) : 0;
+//     return maxId;
+//   };
+//   if (
+//     personsData.find((p) => p.name.toLowerCase() === person.name.toLowerCase())
+//   ) {
+//     return res.status(400).json({
+//       error: "name must be unique",
+//     });
+//   }
+//   if (personsData.find((p) => p.number === person.number)) {
+//     return res.status(400).json({
+//       error: "number must be unique",
+//     });
+//   }
 
-const PORT = process.env.PORT || 3001
+//   if (!person.name || !person.number) {
+//     return res.status(400).json({
+//       error: "name or number missing",
+//     });
+//   }
+
+//   const newPerson = {
+//     id: generateId(),
+//     name: person.name,
+//     number: person.number,
+//   };
+
+//   setPersonsData(personsData.concat(newPerson));
+
+//   res.json(newPerson);
+// });
+
+const PORT = process.env.PORT || 3001;
 console.log("PORT", PORT);
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`Server running on port ${PORT}`);
+});
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
