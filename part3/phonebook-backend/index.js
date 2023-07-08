@@ -3,6 +3,9 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import Person from "./models/person.js";
+import mongoose from "mongoose";
+
+
 
 const app = express();
 
@@ -19,16 +22,26 @@ app.use(
 );
 //End of body logger
 
+//CONNECT TO MONGODB
+mongoose.set("strictQuery", false);
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then((result) => {
+    console.log("connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log("error connecting to MongoDB:", error.message);
+  });
 
 //FETCHING FROM MONGODB
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then((person) => {
-    response.json(person);
-  });
+app.get("/api/persons", (req, res, next) => {
+  Person.find({})
+    .then((persons) => {
+      console.log("persons", persons);
+      res.json(persons);
+    })
+    .catch((err) => next(err));
 });
-
-
-
 
 // app.get("/api/persons", (req, res) => {
 //   res.json(personsData);
@@ -97,10 +110,9 @@ app.get("/api/persons", (request, response) => {
 // });
 
 const PORT = process.env.PORT || 3001;
-console.log("PORT", PORT);
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`Server running on port ${PORT}`)
+);
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });

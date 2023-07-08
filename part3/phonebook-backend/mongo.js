@@ -21,6 +21,7 @@ const personSchema = new mongoose.Schema({
 
 const Person = mongoose.model("Person", personSchema);
 
+//GET ALL PERSONS 
 if (process.argv.length === 3) {
   Person.find({}).then((result) => {
     result.forEach((person) => {
@@ -30,6 +31,8 @@ if (process.argv.length === 3) {
   });
 }
 
+
+//CREATE NEW PERSON
 if (process.argv.length === 5) {
   const person = new Person({
     name: process.argv[3],
