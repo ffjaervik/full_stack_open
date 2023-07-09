@@ -5,8 +5,6 @@ import cors from "cors";
 import Person from "./models/person.js";
 import mongoose from "mongoose";
 
-
-
 const app = express();
 
 app.use(cors());
@@ -33,7 +31,7 @@ mongoose
     console.log("error connecting to MongoDB:", error.message);
   });
 
-//FETCHING FROM MONGODB
+//GET ALL PERSONS FROM MONGODB
 app.get("/api/persons", (req, res, next) => {
   Person.find({})
     .then((persons) => {
@@ -41,6 +39,19 @@ app.get("/api/persons", (req, res, next) => {
       res.json(persons);
     })
     .catch((err) => next(err));
+});
+
+//POST NEW PERSON TO MONGODB
+app.post("/api/persons", (req, res, next) => {
+  const person = req.body;
+  const newPerson = new Person({
+    name: person.name,
+    number: person.number,
+  });
+  newPerson.save().then((result) => {
+    res.json(newPerson);
+    console.log("person saved", newPerson);
+  });
 });
 
 // app.get("/api/persons", (req, res) => {
