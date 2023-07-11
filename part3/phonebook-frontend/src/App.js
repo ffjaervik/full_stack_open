@@ -97,7 +97,11 @@ const App = () => {
     ) {
       alert(`${newName} nr.:${newNumber} is already added to the phonebook`);
     } else {
-      setMessage({...message, text: `${newName} was added to the phonebook`, type: "success"});
+      setMessage({
+        ...message,
+        text: `${newName} was added to the phonebook`,
+        type: "success",
+      });
       setTimeout(() => {
         setMessage({ ...message, text: null, type: null });
       }, 5000);
@@ -111,7 +115,11 @@ const App = () => {
         .then((returnedPerson) => setPersons(persons.concat(returnedPerson)))
         .catch((error) => {
           console.log("error", error.response.data.error);
-          setMessage({...message, text: error.response.data.error, type: "error"});
+          setMessage({
+            ...message,
+            text: error.response.data.error,
+            type: "error",
+          });
         });
     }
     setNewName("");
@@ -155,13 +163,21 @@ const App = () => {
   const handleDelete = (name) => {
     const personToDelete = persons.find((person) => person.name === name);
     if (window.confirm(`Sure you want to delete ${personToDelete.name}`)) {
-      setMessage({...message, text: `${personToDelete.name} was deleted from the phonebook`, type: "success"});
+      setMessage({
+        ...message,
+        text: `${personToDelete.name} was deleted from the phonebook`,
+        type: "success",
+      });
       setTimeout(() => {
         setMessage({ ...message, text: null, type: null });
       }, 5000);
-      deletePerson(personToDelete.id).then(() => {
-        setPersons(persons.filter((person) => person.id !== personToDelete.id));
-      });
+      deletePerson(personToDelete.id)
+        .then(() => {
+          setPersons(
+            persons.filter((person) => person.id !== personToDelete.id)
+          );
+        })
+        .catch((error) => console.log("error", error));
     }
   };
 
