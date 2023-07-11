@@ -1,38 +1,36 @@
 /* eslint-disable react/prop-types */
 
-
-const Notification = ({ message }) => {
-  const success = {
-    color: "green",
-    background: "lightgrey",
-    fontSize: 20,
-    borderStyle: "solid",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+const Notification = ({ text, type }) => {
+  const styles = {
+    box: {
+      background: "lightgrey",
+      fontSize: 20,
+      borderStyle: "solid",
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    },
+    success: {
+      color: "green",
+    },
+    error: {
+      color: "red",
+    },
   };
-  const error = {
-    color: "red",
-    background: "lightgrey",
-    fontSize: 20,
-    borderStyle: "solid",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  };
-
-  if (message === null) {
+  if (text === null) {
     return null;
   }
   return (
     <div
       style={
-        message.includes("deleted") || message.includes("removed")
-          ? error
-          : success
+        type === "success"
+          ? { ...styles.box, ...styles.success }
+          : type === "error"
+          ? { ...styles.box, ...styles.error }
+          : null
       }
     >
-      {message}
+      {text}
     </div>
   );
 };
