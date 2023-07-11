@@ -11,13 +11,15 @@
     "build:ui": "rm -rf build && cd ../phonebook-frontend/ && npm run build && cp -r build ../phonebook-backend",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "@flydotio/dockerfile": "^0.2.16",
+    "eslint": "^8.44.0",
     "nodemon": "^2.0.22"
   },
   "dependencies": {
