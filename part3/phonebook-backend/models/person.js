@@ -3,9 +3,15 @@ import "dotenv/config";
 
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true,
+  },
   number: Number,
 });
+
+
 
 //Changes the _id to id and removes the __v
 personSchema.set("toJSON", {

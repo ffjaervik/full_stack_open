@@ -35,6 +35,8 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message);
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
   next(error);
 };
@@ -68,17 +70,20 @@ app.get("/api/persons/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-//POST NEW PERSON TO MONGODB
+//CREATE NEW PERSON TO MONGODB
 app.post("/api/persons", (req, res, next) => {
   const person = req.body;
   const newPerson = new Person({
     name: person.name,
     number: person.number,
   });
-  newPerson.save().then((result) => {
-    res.json(newPerson);
-    console.log("person saved", newPerson);
-  });
+  newPerson
+    .save()
+    .then((result) => {
+      res.json(newPerson);
+      console.log("person saved", newPerson);
+    })
+    .catch((err) => next(err));
 });
 
 //DELETE PERSON FROM MONGODB
@@ -92,23 +97,21 @@ app.delete("/api/PERSONS/:id", (req, res, next) => {
 
 //UPDATE PERSON IN MONGODB
 app.put("/api/persons/:id", (req, res, next) => {
-  const body = req.body;
-  const person = {
-    name: body.name,
-    number: body.number,
-  };
+ const { name, number } = req.body
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
-    .then((updatedPerson) => {
-      if (updatedPerson) {
-        res.json(updatedPerson);
-      } else {
-        res.status(404).json({ errors: "not found" });
-      }
+ Person.findByIdAndUpdate(
+    req.params.id,
+    { name, number },
+    { new: true, runValidators: true, context: 'query' }
+  )
+    .then(updatedPerson => {
+      res.json(updatedPerson)
     })
-    .catch((err) => next(err));
+    .catch(error => next(error))
 });
 
+
+//GET INFO
 app.get("/info", (req, res) => {
   Person.find({}).then((persons) => {
     console.log("persons", persons);
