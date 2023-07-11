@@ -32,7 +32,7 @@ mongoose
 
 //ERROR HANDLER FUNCTION
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
+  console.error("This is the error Handler:", error.message);
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
   } else if (error.name === "ValidationError") {
@@ -73,6 +73,18 @@ app.get("/api/persons/:id", (req, res, next) => {
 //CREATE NEW PERSON TO MONGODB
 app.post("/api/persons", (req, res, next) => {
   const person = req.body;
+
+  if (!person.name) {
+    return res.status(400).json({
+      error: "name is not valid",
+    });
+  }
+  if (!person.number) {
+    return res.status(400).json({
+      error: "number is not valid",
+    });
+  }
+
   const newPerson = new Person({
     name: person.name,
     number: person.number,
@@ -97,19 +109,18 @@ app.delete("/api/PERSONS/:id", (req, res, next) => {
 
 //UPDATE PERSON IN MONGODB
 app.put("/api/persons/:id", (req, res, next) => {
- const { name, number } = req.body
+  const { name, number } = req.body;
 
- Person.findByIdAndUpdate(
+  Person.findByIdAndUpdate(
     req.params.id,
     { name, number },
-    { new: true, runValidators: true, context: 'query' }
+    { new: true, runValidators: true, context: "query" }
   )
-    .then(updatedPerson => {
-      res.json(updatedPerson)
+    .then((updatedPerson) => {
+      res.json(updatedPerson);
     })
-    .catch(error => next(error))
+    .catch((error) => next(error));
 });
-
 
 //GET INFO
 app.get("/info", (req, res) => {
