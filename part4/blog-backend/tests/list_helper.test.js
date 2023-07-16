@@ -1,4 +1,4 @@
-import { dummy, totalLikes } from '../utils/list_helper'
+import { dummy, totalLikes, favouriteBlog } from '../utils/list_helper'
 
 const blogs = [
   {
@@ -71,5 +71,30 @@ describe('total likes', () => {
   test('when list has multiple blogs, it returns the sum of all likes', () => {
     const result = totalLikes(blogs)
     expect(result).toBe(36)
+  })
+})
+
+describe('favourite blog', () => {
+  test('when list is empty it returns null', () => {
+    const result = favouriteBlog([])
+    expect(result).toBeNull()
+  })
+  test('when list is only one element, it returns that element as an object', () => {
+    const result = favouriteBlog(blogs.slice(0, 1))
+    const theOne = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      likes: 7,
+    }
+    expect(theOne).toEqual(result)
+  })
+  test('when passed an array of blogs it find the favourite and returns an object', () => {
+    const result = favouriteBlog(blogs)
+    const theOne = {
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
+      title: 'Canonical string reduction',
+    }
+    expect(result).toEqual(theOne)
   })
 })
