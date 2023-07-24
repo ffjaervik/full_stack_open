@@ -1,4 +1,4 @@
-import { dummy, totalLikes, favouriteBlog } from '../utils/list_helper'
+const { dummy, totalLikes, favouriteBlog } = require('../utils/list_helper')
 
 const blogs = [
   {
