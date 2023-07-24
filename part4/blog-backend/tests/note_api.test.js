@@ -48,24 +48,40 @@ test('a valid blog can be added ', async () => {
   expect(contents).toContain('test blog')
 })
 
-
-test('a blog can be deleted', async() =>{
+test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
-  await api
-  .delete(`/api/blogs/${blogToDelete.id}`)
-  .expect(204)
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
   const blogsAtEnd = await helper.blogsInDb()
 
-  expect(blogsAtEnd).toHaveLength(
-    helper.initialBlogs.length -1
-  )
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
 
-  const contents = blogsAtEnd.map(r => r.title)
+  const contents = blogsAtEnd.map((r) => r.title)
 
   expect(contents).not.toContain(blogToDelete.title)
+})
+
+test('a blog can be updated', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const updatedBlog = {
+    title: 'updated blog',
+  }
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+
+  const contents = blogsAtEnd.map((blog) => blog.title)
+  expect(contents).toContain('updated blog')
 })
 
 afterAll(async () => {
