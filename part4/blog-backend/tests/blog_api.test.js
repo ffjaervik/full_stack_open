@@ -1,14 +1,14 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const BlogModel = require('../models/blog')
+const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
 const api = supertest(app)
 
 beforeEach(async () => {
-  await BlogModel.deleteMany({})
-  await BlogModel.insertMany(helper.initialBlogs)
+  await Blog.deleteMany({})
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 test('blogs are returned as json', async () => {
@@ -26,13 +26,13 @@ test('the unique identifier property of the blog posts is named id', async () =>
   const response = await api.get('/api/blogs')
   expect(response.body[0].id).toBeDefined()
 })
-//////////////////////////
 test('a valid blog can be added ', async () => {
   const newBlog = {
     title: 'test blog',
     author: 'test author',
     url: 'test url',
     likes: 2,
+    user: '5f9f9b3b1c9d440000a1b0a5',
   }
 
   await api
@@ -83,6 +83,23 @@ test('a blog can be updated', async () => {
   const contents = blogsAtEnd.map((blog) => blog.title)
   expect(contents).toContain('updated blog')
 })
+
+test('a blog without likes property will default to 0', async () => {
+  const newBlog = {
+    title: 'test blog',
+    author: 'test author',
+    url: 'test url',
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd[blogsAtEnd.length - 1].likes).toBe(0)
+})
+
+
 
 afterAll(async () => {
   await mongoose.connection.close()

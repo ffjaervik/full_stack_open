@@ -1,23 +1,24 @@
 const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
-const UserModel = require('../models/users.js')
+const User = require('../models/user.js')
 
 usersRouter.get('/', async (req, res) => {
-  const users = await UserModel.find({}).populate('blogs')
-      res.json(users)
+  const users = await User.find({})
+  res.json(users)
 })
 
-usersRouter.post('/', async (req, res, next) => {
+usersRouter.post('/', async (req, res) => {
   const { username, name, password } = req.body
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
-  const user = new UserModel({
+  const user = new User({
     username,
     name,
     passwordHash,
   })
+  //why does new User not work?
 
   const savedUser = await user.save()
 
