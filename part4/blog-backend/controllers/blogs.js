@@ -1,6 +1,7 @@
 // require('express-async-errors') // This package will take care of errors in async functions. Basically ut gets rid of the need for try-catch blocks in async functions.
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog.js')
+const User = require('../models/user.js')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({})
@@ -10,16 +11,20 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body
 
+  const user = await User.findById(body.userId)
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: body.user,
+    user: user.id,
   })
 
   try {
     const savedBlog = await blog.save()
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
     response.status(201).json(savedBlog)
   } catch (exception) {
     next(exception)
