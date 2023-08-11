@@ -12,6 +12,6 @@
     "esModuleInterop": true,
     "declaration": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": true
   }
 }
