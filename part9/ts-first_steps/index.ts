@@ -24,27 +24,43 @@ app.get('/bmi', (req, res) => {
   }
 });
 
-
-app.post('/exercises', (req:any, res:any) => {
-  const { dailyExercises, target } = req.body;
-  console.log(dailyExercises, target);
-  if (!dailyExercises || !target) {
-    return res.status(400).json({
-      error: 'parameters missing',
-    });
+app.post('/exercises', (req: Record<string, any>, res) => {
+  interface Request {
+    daily_exercises: Array<number>
+    target: number
   }
 
-  if (!Array.isArray(dailyExercises) || isNaN(Number(target))) {
-    return res.status(400).json({
-      error: 'malformatted parameters',
-    });
+  const body = req.body as Request;
+  // why is body
+  console.log(typeof(body))
+
+  if (!body || !body.daily_exercises || !body.target) {
+    return res.status(400).json({error: 'parameters missing'});
+  }
+  if (!Array.isArray(body.daily_exercises)) {
+    return res.status(400).json({error: 'malformed parameters'});
   }
 
-  const result = calculateExercises(dailyExercises, target);
+  body.daily_exercises = body.daily_exercises.map(x => Number(x));
+  body.target = Number(body.target);
+
+  if (isNaN(body.target) || body.daily_exercises.some(x => isNaN(x))) {
+    return res.status(400).json({error: 'malformed parameters'});
+  }
+
+  const result = calculateExercises(body.daily_exercises, body.target);
   return res.json(result);
 });
 
+
+
+
+app.use((_req, res) => res.status(404).end());
+
+
+
 const PORT = 3003;
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
