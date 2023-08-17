@@ -1,38 +1,38 @@
 import express from 'express';
-import calculateBmi from './bmiCalculator.ts';
-import calculateExercises  from './exerciseCalculator';
+import { bmi, categorize } from './bmiCalculator';
+import  {calculateExercises}  from './exerciseCalculator';
 
 const app = express();
+app.disable('x-powered-by');
+app.use(express.json());
 
 app.get('/hello', (_req, res) => {
-  res.send('Hello Full Stack');
+  res.send('Hello Full Stack!');
 });
 
 app.get('/bmi', (req, res) => {
   const height = Number(req.query.height);
   const weight = Number(req.query.weight);
-
-  try {
-    const result: string = calculateBmi(height, weight);
-    res.send(result);
-  } catch (e) {
-    let errorMessage = 'malformatted parameters';
-    if (e instanceof Error) {
-      errorMessage = e.message;
-    }
-    res.send(errorMessage);
+  if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
+    return res.status(400).json({error: 'malformed parameters'});
   }
+
+  const response = {
+    weight: weight,
+    height: height,
+    bmi: categorize(bmi(height, weight)),
+  };
+
+  return res.json(response);
 });
 
-app.post('/exercises', (req: Record<string, any>, res) => {
+app.post('/exercises', (req, res) => {
   interface Request {
     daily_exercises: Array<number>
     target: number
   }
 
   const body = req.body as Request;
-  // why is body
-  console.log(typeof(body))
 
   if (!body || !body.daily_exercises || !body.target) {
     return res.status(400).json({error: 'parameters missing'});
@@ -52,16 +52,9 @@ app.post('/exercises', (req: Record<string, any>, res) => {
   return res.json(result);
 });
 
-
-
-
 app.use((_req, res) => res.status(404).end());
 
-
-
 const PORT = 3003;
-
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
