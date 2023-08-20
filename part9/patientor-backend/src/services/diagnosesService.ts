@@ -1,8 +1,8 @@
 import diagnosesData from '../data/diagnoses';
 import { Diagnosis } from '../types';
 
-const fetchDiagnoses = (): Diagnosis[] => {
+const getDiagnoses = (): Diagnosis[] => {
   return diagnosesData;
 };
 
-export default fetchDiagnoses;
+export default getDiagnoses;
