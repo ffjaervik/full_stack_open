@@ -1,17 +1,42 @@
 import express from 'express';
-import { getNonSensitivePatients } from '../services/patientsService';
+import patientService from '../services/patientsService';
 
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  const result = getNonSensitivePatients();
+  const result = patientService.getNonSensitivePatients();
   console.log('someone requested patient data');
   res.send(result);
 });
 
 router.post('/', (req, res) => {
-  const newPatient: = req.body
-  res.send('Saving a patient!');
+  const { name, occupation, gender, ssn, dateOfBirth } = req.body;
+  const addedPatient = patientService.addPatient({
+    name,
+    occupation,
+    gender,
+    ssn,
+    dateOfBirth,
+  });
+  res.json(addedPatient);
+});
+
+
+router.post('/', (req, res) => {
+  const dto = req.body as NewPatient;
+
+  try {
+    const patientToAdd = toNewPatient(dto);
+    const patientAdded = service.addPatient(patientToAdd);
+    return res.status(201).json(patientAdded);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'server could not process the request' });
+    }
+  }
 });
 
 export default router;
+

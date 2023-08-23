@@ -18,6 +18,7 @@ export interface Diagnosis {
       ssn?: string;
       dateOfBirth?: string;
     }
+    export type NewPatient = Omit<Patient, 'id'>;
 
     export type PublicPatient = Omit<Patient, 'ssn'>;
     
