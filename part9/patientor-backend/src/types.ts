@@ -14,7 +14,7 @@ export interface Diagnosis {
       id: string;
       name: string;
       occupation: string;
-      gender: string;
+      gender: Gender;
       ssn?: string;
       dateOfBirth?: string;
     }
